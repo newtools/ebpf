@@ -94,9 +94,9 @@ const (
 	_ProgLoad
 	_ObjPin
 	_ObjGet
-	// _BPF_PROG_ATTACH
-	// _BPF_PROG_DETACH
-	_ProgTestRun = 10
+	_ProgAttach
+	_ProgDetach
+	_ProgTestRun
 	// _BPF_PROG_GET_NEXT_ID
 	// _BPF_MAP_GET_NEXT_ID
 	// _BPF_PROG_GET_FD_BY_ID
