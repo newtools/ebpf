@@ -17,6 +17,11 @@ type elfCode struct {
 	symtab *symtab
 }
 
+type progSection struct {
+	*elf.Section
+	relocations *elf.Section
+}
+
 // LoadCollectionSpecFromReader parses an io.ReaderAt that represents an ELF layout
 // into a CollectionSpec.
 func LoadCollectionSpecFromReader(code io.ReaderAt) (*CollectionSpec, error) {
@@ -33,10 +38,13 @@ func LoadCollectionSpecFromReader(code io.ReaderAt) (*CollectionSpec, error) {
 
 	ec := &elfCode{f, newSymtab(symbols)}
 
-	var licenseSection, versionSection *elf.Section
-	progSections := make(map[int]*elf.Section)
-	relSections := make(map[int]*elf.Section)
-	mapSections := make(map[int]*elf.Section)
+	var (
+		licenseSection *elf.Section
+		versionSection *elf.Section
+		progSections   = make(map[int]progSection)
+		mapSections    = make(map[int]*elf.Section)
+	)
+
 	for i, sec := range ec.Sections {
 		switch {
 		case strings.HasPrefix(sec.Name, "license"):
@@ -51,13 +59,16 @@ func LoadCollectionSpecFromReader(code io.ReaderAt) (*CollectionSpec, error) {
 			}
 
 			// Store relocations under the section index of the target
-			idx := int(sec.Info)
-			if relSections[idx] != nil {
-				return nil, errors.Errorf("section %d has multiple relocation sections", idx)
+			prog := progSections[int(sec.Info)]
+			if prog.relocations != nil {
+				return nil, errors.Errorf("section %d has multiple relocation sections", sec.Info)
 			}
-			relSections[idx] = sec
+			prog.relocations = sec
+			progSections[int(sec.Info)] = prog
 		case sec.Type == elf.SHT_PROGBITS && (sec.Flags&elf.SHF_EXECINSTR) != 0 && sec.Size > 0:
-			progSections[i] = sec
+			prog := progSections[i]
+			prog.Section = sec
+			progSections[i] = prog
 		}
 	}
 
@@ -76,7 +87,7 @@ func LoadCollectionSpecFromReader(code io.ReaderAt) (*CollectionSpec, error) {
 		return nil, errors.Wrap(err, "load maps")
 	}
 
-	progs, libs, err := ec.loadPrograms(progSections, relSections, license, version)
+	progs, libs, err := ec.loadPrograms(progSections, license, version)
 	if err != nil {
 		return nil, errors.Wrap(err, "load programs")
 	}
@@ -114,10 +125,16 @@ func loadVersion(sec *elf.Section, bo binary.ByteOrder) (uint32, error) {
 	return version, errors.Wrapf(err, "section %s", sec.Name)
 }
 
-func (ec *elfCode) loadPrograms(progSections, relSections map[int]*elf.Section, license string, version uint32) (map[string]*ProgramSpec, []asm.Instructions, error) {
+func (ec *elfCode) loadPrograms(progSections map[int]progSection, license string, version uint32) (map[string]*ProgramSpec, []asm.Instructions, error) {
 	progs := make(map[string]*ProgramSpec)
 	var libs []asm.Instructions
 	for idx, prog := range progSections {
+		if prog.Section == nil {
+			// Skip bare relocation sections without accompanying
+			// BPF instructions.
+			continue
+		}
+
 		funcSym := ec.symtab.forSectionOffset(idx, 0)
 		if funcSym == nil {
 			return nil, nil, errors.Errorf("section %v: no label at start", prog.Name)
@@ -134,7 +151,7 @@ func (ec *elfCode) loadPrograms(progSections, relSections map[int]*elf.Section, 
 			return nil, nil, errors.Wrapf(err, "program %s", funcSym.Name)
 		}
 
-		if rels := relSections[idx]; rels != nil {
+		if rels := prog.relocations; rels != nil {
 			err = ec.applyRelocations(insns, rels, offsets)
 			if err != nil {
 				return nil, nil, errors.Wrapf(err, "program %s: section %s", funcSym.Name, rels.Name)
