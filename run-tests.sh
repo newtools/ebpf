@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 # Test the current package under a different kernel.
 # Requires virtme and qemu to be installed.
 
