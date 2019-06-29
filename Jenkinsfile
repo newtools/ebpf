@@ -11,8 +11,8 @@ pipeline {
         sh 'curl -L --fail https://dl.google.com/go/go1.12.6.linux-amd64.tar.gz -o ./go.tar.gz'
         sh 'echo "dbcf71a3c1ea53b8d54ef1b48c85a39a6c9a935d01fc8291ff2b92028e59913c go.tar.gz" | sha256sum -c'
         sh 'tar -C /usr/local -xzf go.tar.gz'
+        sh 'export PATH=$PATH:/usr/local/go'
       }
-      
     }
     stage('build-vet-lint') {
       steps {
