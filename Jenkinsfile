@@ -16,8 +16,6 @@ pipeline {
     }
     stage('build-vet-lint') {
       steps {
-        echo "$PATH"
-        sh 'ls -al /usr/local'
         sh 'go get -d ./...'
         sh 'go get build ./...'
         sh 'go vet ./...'
@@ -38,7 +36,7 @@ pipeline {
   environment {
     CODECOV_TOKEN = credentials('codecov-token')
     GOROOT = '/usr/local/go'
-    PATH = "$PATH:/usr/local/go"
+    PATH = "$PATH:/usr/local/go/bin"
     GOPATH = '/root/go'
   }
 }
