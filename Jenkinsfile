@@ -3,7 +3,6 @@ pipeline {
     node {
       label 'ebpf'
     }
-
   }
   stages {
     stage('prep') {
@@ -12,8 +11,10 @@ pipeline {
         sh 'echo "dbcf71a3c1ea53b8d54ef1b48c85a39a6c9a935d01fc8291ff2b92028e59913c go.tar.gz" | sha256sum -c'
         sh 'tar -C /usr/local -xzf go.tar.gz'
         sh 'mkdir -p /root/go'
-        sh 'sudo pip3 install https://github.com/amluto/virtme/archive/538f1e756139a6b57a4780e7ceb3ac6bcaa4fe6f.zip'
         sh 'apt-get -y update'
+        sh 'apt-get -y install python3'
+        sh 'apt-get -y install python3-pip'
+        sh 'sudo pip3 install https://github.com/amluto/virtme/archive/538f1e756139a6b57a4780e7ceb3ac6bcaa4fe6f.zip'
         sh 'apt-get install -y build-essential'
         sh 'apt-get install -y qemu-system-x86'
       }
