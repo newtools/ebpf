@@ -36,7 +36,7 @@ pipeline {
   environment {
     CODECOV_TOKEN = credentials('codecov-token')
     GOROOT = '/usr/local/go'
-    PATH = '$PATH:/usr/local/go'
+    PATH = "$PATH:/usr/local/go"
     GOPATH = '/root/go'
   }
 }
