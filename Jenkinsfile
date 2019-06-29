@@ -16,11 +16,11 @@ pipeline {
     }
     stage('build-vet-lint') {
       steps {
-        sh go get -d ./...
-        sh go get build ./...
-        sh go vet ./...
-        sh go install golang.org/x/lint/golint
-        sh $GOPATH/bin/golint ./...
+        sh bash -e "go get -d ./..."
+        sh bash -e "go get build ./..."
+        sh bash -e "go vet ./..."
+        sh bash -e "go install golang.org/x/lint/golint"
+        sh bash -e "$GOPATH/bin/golint ./..."
       }
     }
     stage('test') {
