@@ -17,6 +17,7 @@ pipeline {
     stage('build-vet-lint') {
       steps {
         echo "$PATH"
+        sh 'ls -al /usr/local'
         sh 'go get -d ./...'
         sh 'go get build ./...'
         sh 'go vet ./...'
