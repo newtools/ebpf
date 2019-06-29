@@ -25,7 +25,7 @@ pipeline {
     }
     stage('test') {
       steps {
-        sh sudo pip3 install https://github.com/amluto/virtme/archive/538f1e756139a6b57a4780e7ceb3ac6bcaa4fe6f.zip
+        sh bash -e "sudo pip3 install https://github.com/amluto/virtme/archive/538f1e756139a6b57a4780e7ceb3ac6bcaa4fe6f.zip"
         sh apt-get -y update
         sh apt-get install -y qemu-system-x86
         sh timeout -s KILL 30s bash -e ".ci/run-tests.sh 5.0.13"
