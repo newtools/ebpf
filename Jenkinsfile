@@ -17,7 +17,7 @@ pipeline {
     stage('build-vet-lint') {
       steps {
         sh 'go get -d ./...'
-        sh 'go get build ./...'
+        sh 'go build ./...'
         sh 'go vet ./...'
         sh 'go install golang.org/x/lint/golint'
         sh '$GOPATH/bin/golint ./...'
