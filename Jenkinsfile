@@ -38,5 +38,6 @@ pipeline {
     GOROOT = '/usr/local/go'
     PATH = "$PATH:/usr/local/go/bin"
     GOPATH = '/root/go'
+    HOME = '/root'
   }
 }
