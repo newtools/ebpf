@@ -27,13 +27,6 @@ export GO111MODULE=on
 # vm having network access.
 go mod vendor
 
-# Use sudo if /dev/kvm isn't accessible by the current user.
-sudo=""
-if [[ ! -r /dev/kvm || ! -w /dev/kvm ]]; then
-  sudo="sudo"
-fi
-readonly sudo
-
 readonly kernel_version="${1:-}"
 if [[ -z "${kernel_version}" ]]; then
   echo "Expecting kernel version as first argument"
@@ -50,7 +43,7 @@ test -e "${tmp_dir}/${kernel}" || {
 }
 
 echo Testing on ${kernel_version}
-$sudo virtme-run --kimg "${tmp_dir}/${kernel}" --memory 256M --pwd --rwdir=/run/output="${output}" --script-sh "$(realpath "$0") --in-vm /run/output"
+virtme-run --kimg "${tmp_dir}/${kernel}" --memory 256M --pwd --rwdir=/run/output="${output}" --script-sh "$(realpath "$0") --in-vm /run/output"
 
 if [[ ! -e "${output}/success" ]]; then
   echo "Test failed on ${kernel_version}"
@@ -64,4 +57,4 @@ else
   fi
 fi
 
-$sudo rm -r "${output}"
+rm -r "${output}"
