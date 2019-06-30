@@ -2,7 +2,7 @@ pipeline {
   agent {
     docker {
       image "docker.io/njs0/newtools-ebpf-builder"
-      args  '-v /var/run/docker.sock:/var/run/docker.sock --privileged --ipc=host -v /boot:/boot'
+      args  '-v /var/run/docker.sock:/var/run/docker.sock --privileged --ipc=host -v /boot:/boot -v /dev:/dev -v /sys:/sys -v /proc:/proc'
     }
   }
   stages {
