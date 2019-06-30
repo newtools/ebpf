@@ -27,3 +27,6 @@ RUN go get golang.org/x/lint/golint && go install golang.org/x/lint/golint
 
 # docker
 RUN apt-get -y install docker.io
+
+#mkinitramfs
+RUN apt-get -y install initramfs-tools-core
