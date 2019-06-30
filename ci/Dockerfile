@@ -24,3 +24,6 @@ RUN apt-get -y install git-core
 # go lint
 ENV PATH="/root/go/bin:${PATH}"
 RUN go get golang.org/x/lint/golint && go install golang.org/x/lint/golint
+
+# docker
+RUN apt-get -y install docker.io
