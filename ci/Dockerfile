@@ -17,3 +17,6 @@ RUN apt-get -y install python3 && \
 apt-get -y install python3-pip && \
 pip3 install https://github.com/amluto/virtme/archive/538f1e756139a6b57a4780e7ceb3ac6bcaa4fe6f.zip && \
 apt-get -y install qemu-system-x86
+
+# git apparently
+RUN apt-get -y install git-core
