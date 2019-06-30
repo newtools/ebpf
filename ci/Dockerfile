@@ -20,3 +20,7 @@ apt-get -y install qemu-system-x86
 
 # git apparently
 RUN apt-get -y install git-core
+
+# go lint
+ENV PATH="/root/go/bin:${PATH}"
+RUN go get golang.org/x/lint/golint && go install golang.org/x/lint/golint

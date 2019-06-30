@@ -10,14 +10,13 @@ pipeline {
         sh 'go get -d ./...'
         sh 'go build ./...'
         sh 'go vet ./...'
-        sh 'go install golang.org/x/lint/golint'
-        sh '$GOPATH/bin/golint ./...'
+        sh 'golint ./...'
       }
     }
     stage('test') {
       steps {
-        sh 'timeout -s KILL 30s bash -e ".ci/run-tests.sh 5.0.13"'
-        sh 'timeout -s KILL 30s bash -e ".ci/run-tests.sh 4.19.40"'
+        sh 'timeout -s KILL 30s bash -e "./ci/run-tests.sh 5.0.13"'
+        sh 'timeout -s KILL 30s bash -e "./ci/run-tests.sh 4.19.40"'
       }
     }
   }
