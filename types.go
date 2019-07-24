@@ -201,11 +201,13 @@ const (
 	CGroupSockopt
 )
 
-// AttachType of the eBPF program
+// AttachType of the eBPF program, needed to differentiate allowed context accesses in
+// some newer program types like CGroupSockAddr. Should be set to AttachNone if not required.
+// Will cause invalid argument (EINVAL) at program load time if set incorrectly.
 type AttachType uint32
 
-// AttachTypeNone is an alias for AttachCGroupInetIngress for readability reasons
-const AttachTypeNone AttachType = 0
+// AttachNone is an alias for AttachCGroupInetIngress for readability reasons
+const AttachNone AttachType = 0
 
 const (
 	AttachCGroupInetIngress AttachType = iota

@@ -240,7 +240,7 @@ func (ec *elfCode) loadMaps(mapSections map[int]*elf.Section) (map[string]*MapSp
 
 func getProgType(v string) (ProgType, AttachType) {
 	types := map[string]ProgType{
-		// From https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/samples/bpf/bpf_load.c?id=fb40c9ddd66b9c9bb811bbee125b3cb3ba1faee7#n60
+		// From https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/lib/bpf/libbpf.c#n3568
 		"socket":         SocketFilter,
 		"seccomp":        SocketFilter,
 		"kprobe/":        Kprobe,
@@ -266,10 +266,8 @@ func getProgType(v string) (ProgType, AttachType) {
 		"cgroup/sysctl":     CGroupSysctl,
 		"cgroup/getsockopt": CGroupSockopt,
 		"cgroup/setsockopt": CGroupSockopt,
-
-		// From https://github.com/CumulusNetworks/iproute2/blob/6335c5ff67202cf5b39eb929e2a0a5bb133627ba/include/bpf_elf.h#L19
-		"classifier": SchedCLS,
-		"action":     SchedACT,
+		"classifier":        SchedCLS,
+		"action":            SchedACT,
 	}
 	attachTypes := map[string]AttachType{
 		"cgroup_skb/ingress":    AttachCGroupInetIngress,
@@ -296,7 +294,7 @@ func getProgType(v string) (ProgType, AttachType) {
 		"cgroup/getsockopt":     AttachCGroupGetsockopt,
 		"cgroup/setsockopt":     AttachCGroupSetsockopt,
 	}
-	attachType := AttachTypeNone
+	attachType := AttachNone
 	for k, t := range attachTypes {
 		if strings.HasPrefix(v, k) {
 			attachType = t
@@ -308,7 +306,7 @@ func getProgType(v string) (ProgType, AttachType) {
 			return t, attachType
 		}
 	}
-	return Unrecognized, attachType
+	return Unrecognized, AttachNone
 }
 
 func assignSymbols(symbolOffsets map[uint64]*elf.Symbol, insOffsets map[uint64]int, insns asm.Instructions) error {
