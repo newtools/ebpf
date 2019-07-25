@@ -16,12 +16,12 @@ pipeline {
     }
     stage('test-5.0') {
       steps {
-        sh 'timeout -s KILL 10m ./ci/run-tests.sh 5.0.13'
+        sh 'timeout -s KILL 1h ./ci/run-tests.sh 5.0.13'
       }
     }
     stage('test-4.19') {
       steps {
-        sh 'timeout -s KILL 10m ./ci/run-tests.sh 4.19.40'
+        sh 'timeout -s KILL 1h ./ci/run-tests.sh 4.19.40'
       }
     }
   }
