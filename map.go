@@ -212,20 +212,33 @@ func (m *Map) Get(key, valueOut interface{}) (bool, error) {
 }
 
 // GetBytes gets a value from Map
-func (m *Map) GetBytes(key interface{}) ([]byte, error) {
+//
+// If valuePtr is pass as argument, data will be written on
+// the user need to pass a buffer large enougth to receive the value size
+func (m *Map) GetBytes(key interface{}, valuePtr ...unsafe.Pointer) ([]byte, error) {
 	keyBytes, err := marshalBytes(key, int(m.abi.KeySize))
 	if err != nil {
 		return nil, err
 	}
-	valueBytes := make([]byte, m.fullValueSize)
+	var valueBytes []byte
+	var valueBytesPtr unsafe.Pointer
+	if len(valuePtr) > 0 {
+		valueBytesPtr = valuePtr[0]
+	} else {
+		valueBytes = make([]byte, m.fullValueSize)
+		valueBytesPtr = unsafe.Pointer(&valueBytes[0])
+	}
 	attr := bpfMapOpAttr{
 		mapFd: m.fd,
 		key:   newPtr(unsafe.Pointer(&keyBytes[0])),
-		value: newPtr(unsafe.Pointer(&valueBytes[0])),
+		value: newPtr(valueBytesPtr),
 	}
 	_, err = bpfCall(_MapLookupElem, unsafe.Pointer(&attr), unsafe.Sizeof(attr))
 	if errors.Cause(err) == unix.ENOENT {
 		return nil, nil
+	}
+	if len(valuePtr) > 0 {
+		return nil, err
 	}
 	return valueBytes, err
 }

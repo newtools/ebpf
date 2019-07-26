@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"math"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"sort"
 	"testing"
@@ -375,6 +376,14 @@ func TestMapName(t *testing.T) {
 
 	if name := convertCString(info.mapName[:]); name != "test" {
 		t.Error("Expected name to be test, got", name)
+	}
+}
+
+func TestCGO(t *testing.T) {
+	out, err := exec.Command("go", "run", "testdata/go/test_cgo.go").CombinedOutput()
+	t.Log(string(out))
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
