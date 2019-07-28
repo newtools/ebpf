@@ -43,7 +43,7 @@ test -e "${tmp_dir}/${kernel}" || {
 }
 
 echo Testing on ${kernel_version}
-virtme-run --kimg "${tmp_dir}/${kernel}" --memory 2G --pwd --rwdir=/run/output="${output}" --script-sh "$(realpath "$0") --in-vm /run/output" --show-command --qemu-opts -vga qxl -spice port=5900,addr=127.0.0.1,disable-ticketing
+virtme-run --kimg "${tmp_dir}/${kernel}" --memory 2G --pwd --rwdir=/run/output="${output}" --script-sh "$(realpath "$0") --in-vm /run/output" --show-command --qemu-opts -monitor unix:qemu-monitor-socket,server,nowait
 
 if [[ ! -e "${output}/success" ]]; then
   echo "Test failed on ${kernel_version}"
